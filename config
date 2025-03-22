@@ -1,0 +1,9 @@
+
+
+{
+    "hunter_api_key":"",
+
+    "save_dir": "./data",
+
+    "target_number": 400
+}
