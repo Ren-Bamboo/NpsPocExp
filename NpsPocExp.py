@@ -95,7 +95,7 @@ class NpsScan:
             data["limit"] = json.loads(res.text)["total"]  # 确保拿到所有代理端口
 
             # 抽取所有的可用的端口
-            res = req.post(url=url, data=data, headers=NpsScan.header,timeout=3)
+            res = req.post(url=url, data=data, headers=NpsScan.header, timeout=3)
             hp_list = json.loads(res.text)["rows"]
             for hp in hp_list:
                 if hp["RunStatus"] and hp["Status"] and hp["Client"]["IsConnect"]:
@@ -106,6 +106,7 @@ class NpsScan:
                     else:
                         _ = "%s://%s:%s" % (prefix, ip, hp["Port"])
                     final_dic[prefix].append(_)
+                    # print(final_dic)
         # print(final_dic)
         return final_dic
 
@@ -117,28 +118,35 @@ class NpsScan:
         """
         target_url = ["https://www.facebook.com", "https://www.baidu.com"]  # 过内外地址
         type_url = ["out", "in"]
-        proxies = {
-            "http": proxy.replace("socks5", "socks5h"),
-            "https": proxy.replace("socks5", "socks5h"),
-        }
+        proxies = [{
+            "http": proxy,
+            "https": proxy,
+        }]
+        if "socks5" in proxy:
+            proxies.append({
+                "http": proxy.replace("socks5", "socks5h"),
+                "https": proxy.replace("socks5", "socks5h"),
+            })
+        # print(proxy)
+        # print(proxies)
         result = {"out": False, "in": False}
 
         # 测试线路
-        def test_conn(url, type_):
+        def test_conn(url, type_ , proxy):
             try:
-                res = requests.get(url=url, headers=NpsScan.header, proxies=proxies, timeout=3)
+                res = requests.get(url=url, headers=NpsScan.header, proxies=proxy, timeout=3)
                 if res.status_code == 200:
                     # print(proxy, "---success---", url, )
                     result[type_] = True
+                else:
+                    print("!=200", res.status_code)
             except Exception:
                 pass
 
-        th_list = []
         for url, type_ in zip(target_url, type_url):
-            th = threading.Thread(target=test_conn, args=(url, type_))
-            th.start()
-            th_list.append(th)
-        [th.join() for th in th_list]
+            for pro in proxies:
+                test_conn(url, type_, pro)
+
         # print(result)
         return result
 

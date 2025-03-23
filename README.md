@@ -8,6 +8,8 @@
 
 ~~~
 pip install -r requirements.txt
+
+# 注意，一定要进行pip安装，尤其是PySocks库，否则可能导致没有socks代理结果
 ~~~
 
 ## 使用方法
@@ -44,6 +46,8 @@ python main.py -a
 python main.py -u https://www.test.com
 
 python main.py -f filePath
+
+# 推荐使用指定文件的模式，动态抓取目标不太稳定，不如用其它空间测绘工具收集目标，再使用本脚本。
 ~~~
 
 ## 配置文件

@@ -54,4 +54,4 @@ class GatherTarget:
             for t in target_url:
                 f.write(t+"\n")
 
-        return target_url
+        return list(target_url)

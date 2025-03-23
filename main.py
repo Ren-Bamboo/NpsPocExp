@@ -28,16 +28,18 @@ def init():
 if __name__ == '__main__':
     args = init()
     if args.active:
-        target_set = GatherTarget.hunter_scan()
+        target_set = core.active_scan_target()
     else:
         if args.file:
-            target_set = read_file(args.file)
+            target_set = core.read_file(args.file)
         elif args.url:
-            target_set = {args.url}
+            target_set = [args.url]
         else:
             print("参数错误")
             exit(-1)
 
-    info_list = check_target(target_set)
-
-    save_result(info_list)
+    chunk = 25  # 可通过配置文件改
+    for i in range(0, len(target_set), chunk):
+        print("第", i//25+1, "块开始处理")
+        info_list = core.check_target(list(target_set)[i:i+chunk])
+        core.save_result(info_list)
